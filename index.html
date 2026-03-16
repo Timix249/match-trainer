@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#2563eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Mathe Trainer" />
+  <title>Mathe Trainer PWA</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <style>
+    :root{
+      --bg1:#eff6ff;
+      --bg2:#f8fafc;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --primary:#2563eb;
+      --primary-dark:#1d4ed8;
+      --success:#16a34a;
+      --success-bg:#dcfce7;
+      --danger:#dc2626;
+      --danger-bg:#fee2e2;
+      --warning:#f59e0b;
+      --shadow: 0 14px 40px rgba(37,99,235,.13);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, #dbeafe 0%, transparent 35%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+    .app{
+      max-width:980px;
+      margin:0 auto;
+      padding:18px 14px 30px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .hero{
+      padding:22px 18px 18px;
+      background:linear-gradient(135deg, #2563eb, #1e40af);
+      color:#fff;
+    }
+    .hero-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(28px, 5vw, 40px);
+      line-height:1.05;
+    }
+    .subtitle{
+      margin:10px 0 0;
+      opacity:.95;
+      font-size:15px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.25);
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:700;
+      backdrop-filter: blur(8px);
+      min-height:44px;
+    }
+    .toolbar{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      padding:16px;
+    }
+    .toolbar-group{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:18px;
+      padding:14px;
+    }
+    .toolbar-group h2{
+      font-size:14px;
+      margin:0 0 10px;
+      color:var(--muted);
+    }
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    select, button{
+      border:none;
+      border-radius:14px;
+      min-height:48px;
+      padding:0 16px;
+      font-size:16px;
+      font-weight:700;
+    }
+    select{
+      background:#fff;
+      color:var(--text);
+      border:1px solid #cbd5e1;
+      min-width:180px;
+      box-shadow:0 2px 10px rgba(15,23,42,.04) inset;
+    }
+    button{
+      cursor:pointer;
+      transition:transform .12s ease, box-shadow .2s ease, background .2s ease;
+      box-shadow: 0 10px 22px rgba(37,99,235,.18);
+    }
+    button:active{ transform:scale(.98) }
+    .btn-primary{
+      color:#fff;
+      background:linear-gradient(180deg, var(--primary), var(--primary-dark));
+    }
+    .btn-secondary{
+      color:var(--primary);
+      background:#e0ecff;
+      box-shadow:none;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns: repeat(4,1fr);
+      gap:12px;
+      padding:0 16px 16px;
+    }
+    .stat{
+      background:#fff;
+      border:1px solid #e2e8f0;
+      border-radius:18px;
+      padding:14px;
+      text-align:center;
+    }
+    .stat .label{
+      display:block;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .stat .value{
+      font-size:26px;
+      font-weight:800;
+    }
+    .tasks-wrap{
+      padding:0 16px 16px;
+    }
+    .tasks-card{
+      background:linear-gradient(180deg, #ffffff, #f8fbff);
+      border:1px solid #dbeafe;
+      border-radius:22px;
+      padding:10px;
+    }
+    .tasks-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:10px 8px 14px;
+      flex-wrap:wrap;
+    }
+    .tasks-header h3{
+      margin:0;
+      font-size:20px;
+    }
+    .tasks-grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+    .task{
+      background:#fff;
+      border:1px solid #dbeafe;
+      border-radius:18px;
+      padding:12px;
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:10px;
+      align-items:center;
+      min-height:70px;
+      opacity:0;
+      transform:translateY(10px);
+      animation:fadeInUp .35s ease forwards;
+    }
+    .task-number{
+      width:34px;
+      height:34px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      background:#eff6ff;
+      color:var(--primary);
+      font-weight:800;
+      font-size:14px;
+    }
+    .task-text{
+      font-size:20px;
+      font-weight:700;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
+    .task input{
+      width:94px;
+      min-height:46px;
+      border-radius:14px;
+      border:2px solid #cbd5e1;
+      text-align:center;
+      font-size:20px;
+      font-weight:800;
+      padding:0 8px;
+      outline:none;
+      transition:border-color .2s ease, box-shadow .2s ease, transform .12s ease, background .2s ease;
+    }
+    .task input:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px rgba(37,99,235,.12);
+      transform:translateY(-1px);
+    }
+    .task.correct{
+      border-color:#86efac;
+      background:linear-gradient(180deg, #ffffff, #f0fdf4);
+    }
+    .task.wrong{
+      border-color:#fecaca;
+      background:linear-gradient(180deg, #ffffff, #fff5f5);
+    }
+    .task.correct input{
+      border-color:var(--success);
+      background:var(--success-bg);
+      color:#166534;
+      animation:pop .32s ease;
+    }
+    .task.wrong input{
+      border-color:var(--danger);
+      background:var(--danger-bg);
+      color:#991b1b;
+      animation:shake .35s ease;
+    }
+    .correct-answer{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:5px;
+      display:none;
+    }
+    .task.wrong .correct-answer{ display:block; }
+    .footer-note{
+      padding:8px 16px 20px;
+      color:var(--muted);
+      font-size:14px;
+      text-align:center;
+    }
+    .install-tip{
+      margin-top:8px;
+      font-size:14px;
+      opacity:.95;
+    }
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:20px;
+      transform:translateX(-50%) translateY(120px);
+      background:#0f172a;
+      color:#fff;
+      padding:12px 16px;
+      border-radius:14px;
+      box-shadow:0 16px 40px rgba(15,23,42,.3);
+      transition:transform .25s ease;
+      z-index:1000;
+      font-weight:700;
+    }
+    .toast.show{ transform:translateX(-50%) translateY(0); }
+
+    @keyframes shake{
+      0%,100%{transform:translateX(0)}
+      25%{transform:translateX(-5px)}
+      50%{transform:translateX(5px)}
+      75%{transform:translateX(-4px)}
+    }
+    @keyframes pop{
+      0%{transform:scale(.95)}
+      60%{transform:scale(1.04)}
+      100%{transform:scale(1)}
+    }
+    @keyframes fadeInUp{
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+    @media (max-width: 860px){
+      .stats{ grid-template-columns:repeat(2,1fr); }
+      .toolbar{ grid-template-columns:1fr; }
+    }
+    @media (max-width: 640px){
+      .app{ padding:10px 10px 24px; }
+      .hero{ padding:18px 14px 16px; }
+      .tasks-grid{ grid-template-columns:1fr; }
+      .task{
+        grid-template-columns:auto 1fr;
+        grid-template-areas:
+          "num text"
+          "num input";
+        align-items:center;
+      }
+      .task-number{ grid-area:num; align-self:start; }
+      .task-main{ grid-area:text; min-width:0; }
+      .task-input-wrap{ grid-area:input; }
+      .task-text{ font-size:22px; white-space:normal; }
+      .task input{ width:100%; max-width:140px; }
+      .controls{ flex-direction:column; align-items:stretch; }
+      select, button{ width:100%; }
+      .stat .value{ font-size:24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="card">
+      <section class="hero">
+        <div class="hero-top">
+          <div>
+            <h1>Mathe Trainer</h1>
+            <p class="subtitle">PWA‑додаток з рівнями складності, анімаціями, рекордом і версією для телефона.</p>
+          </div>
+          <div class="badge" id="installBadge">📲 PWA bereit</div>
+        </div>
+        <div class="install-tip" id="installTip">На телефоні можна додати на головний екран і запускати як звичайний додаток.</div>
+      </section>
+
+      <section class="toolbar">
+        <div class="toolbar-group">
+          <h2>Einstellungen</h2>
+          <div class="controls">
+            <select id="level" aria-label="Schwierigkeit wählen">
+              <option value="easy">Leicht</option>
+              <option value="medium">Mittel</option>
+              <option value="hard">Schwer</option>
+            </select>
+            <button class="btn-secondary" id="newTasksBtn" type="button">🔁 Neue Aufgaben</button>
+            <button class="btn-primary" id="checkBtn" type="button">✅ Prüfen</button>
+          </div>
+        </div>
+
+        <div class="toolbar-group">
+          <h2>App</h2>
+          <div class="controls">
+            <button class="btn-secondary" id="installBtn" type="button" hidden>⬇️ Installieren</button>
+            <button class="btn-secondary" id="resetRecordBtn" type="button">🗑️ Rekord löschen</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats">
+        <div class="stat">
+          <span class="label">Aufgaben</span>
+          <span class="value" id="taskCount">20</span>
+        </div>
+        <div class="stat">
+          <span class="label">Richtig</span>
+          <span class="value" id="score">0</span>
+        </div>
+        <div class="stat">
+          <span class="label">Rekord</span>
+          <span class="value" id="record">0</span>
+        </div>
+        <div class="stat">
+          <span class="label">Stufe</span>
+          <span class="value" id="levelLabel">Leicht</span>
+        </div>
+      </section>
+
+      <section class="tasks-wrap">
+        <div class="tasks-card">
+          <div class="tasks-header">
+            <h3>Aufgaben</h3>
+            <div id="summaryText">Введіть відповіді та натисніть «Prüfen».</div>
+          </div>
+          <div class="tasks-grid" id="tasks"></div>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        Працює офлайн після першого відкриття. Для телефона інтерфейс автоматично адаптується.
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Gespeichert</div>
+
+  <script>
+    const TASKS_PER_ROUND = 20;
+    const answers = [];
+    let deferredPrompt = null;
+    let record = Number(localStorage.getItem('mathe-record') || 0);
+
+    const tasksEl = document.getElementById('tasks');
+    const scoreEl = document.getElementById('score');
+    const recordEl = document.getElementById('record');
+    const levelEl = document.getElementById('level');
+    const levelLabelEl = document.getElementById('levelLabel');
+    const taskCountEl = document.getElementById('taskCount');
+    const summaryTextEl = document.getElementById('summaryText');
+    const installBtn = document.getElementById('installBtn');
+    const installBadge = document.getElementById('installBadge');
+    const installTip = document.getElementById('installTip');
+    const toastEl = document.getElementById('toast');
+
+    recordEl.textContent = record;
+
+    function showToast(text){
+      toastEl.textContent = text;
+      toastEl.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove('show'), 1800);
+    }
+
+    function rand(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function levelMeta(level){
+      if(level === 'medium'){
+        return { min: 10, max: 50, name: 'Mittel' };
+      }
+      if(level === 'hard'){
+        return { min: 20, max: 120, name: 'Schwer' };
+      }
+      return { min: 1, max: 10, name: 'Leicht' };
+    }
+
+    function makeTask(level){
+      const meta = levelMeta(level);
+      const type = rand(1,4);
+      let a, b, c, text, result;
+
+      if(type === 1){
+        a = rand(meta.min, meta.max);
+        b = rand(meta.min, meta.max);
+        text = `${a} + ${b} =`;
+        result = a + b;
+      }
+
+      if(type === 2){
+        a = rand(meta.min, meta.max);
+        b = rand(meta.min, meta.max);
+        if(b > a){ [a,b] = [b,a]; }
+        text = `${a} − ${b} =`;
+        result = a - b;
+      }
+
+      if(type === 3){
+        if(level === 'easy'){
+          a = rand(1,10);
+          b = rand(1,10);
+        }else if(level === 'medium'){
+          a = rand(2,12);
+          b = rand(2,12);
+        }else{
+          a = rand(5,20);
+          b = rand(2,15);
+        }
+        text = `${a} × ${b} =`;
+        result = a * b;
+      }
+
+      if(type === 4){
+        if(level === 'easy'){
+          b = rand(1,10);
+          c = rand(1,10);
+        }else if(level === 'medium'){
+          b = rand(2,12);
+          c = rand(2,12);
+        }else{
+          b = rand(2,15);
+          c = rand(5,20);
+        }
+        a = b * c;
+        text = `${a} : ${b} =`;
+        result = c;
+      }
+
+      return { text, result };
+    }
+
+    function generateTasks(){
+      const level = levelEl.value;
+      const meta = levelMeta(level);
+
+      answers.length = 0;
+      tasksEl.innerHTML = '';
+
+      for(let i = 0; i < TASKS_PER_ROUND; i++){
+        const task = makeTask(level);
+        answers.push(task.result);
+
+        const item = document.createElement('div');
+        item.className = 'task';
+        item.style.animationDelay = `${i * 0.025}s`;
+
+        item.innerHTML = `
+          <div class="task-number">${i + 1}</div>
+          <div class="task-main">
+            <div class="task-text">${task.text}</div>
+            <div class="correct-answer">Правильна відповідь: <strong>${task.result}</strong></div>
+          </div>
+          <div class="task-input-wrap">
+            <input
+              type="number"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              id="q${i}"
+              aria-label="Antwort für Aufgabe ${i + 1}"
+              autocomplete="off"
+            />
+          </div>
+        `;
+
+        tasksEl.appendChild(item);
+      }
+
+      taskCountEl.textContent = TASKS_PER_ROUND;
+      scoreEl.textContent = '0';
+      levelLabelEl.textContent = meta.name;
+      summaryTextEl.textContent = 'Введіть відповіді та натисніть «Prüfen».';
+      focusFirstInput();
+    }
+
+    function focusFirstInput(){
+      const first = document.getElementById('q0');
+      if(first && window.innerWidth > 640){
+        first.focus();
+      }
+    }
+
+    function checkAnswers(){
+      let correct = 0;
+
+      for(let i = 0; i < answers.length; i++){
+        const input = document.getElementById(`q${i}`);
+        const card = input.closest('.task');
+        const value = Number(input.value);
+
+        card.classList.remove('correct', 'wrong');
+
+        if(input.value !== '' && value === answers[i]){
+          card.classList.add('correct');
+          correct++;
+        }else{
+          card.classList.add('wrong');
+        }
+      }
+
+      scoreEl.textContent = String(correct);
+      summaryTextEl.textContent = `Richtig: ${correct} / ${answers.length}`;
+
+      if(correct > record){
+        record = correct;
+        localStorage.setItem('mathe-record', String(record));
+        recordEl.textContent = String(record);
+        showToast(`🏆 Neuer Rekord: ${record}`);
+      }else{
+        showToast(`Ergebnis: ${correct} / ${answers.length}`);
+      }
+    }
+
+    document.getElementById('newTasksBtn').addEventListener('click', generateTasks);
+    document.getElementById('checkBtn').addEventListener('click', checkAnswers);
+    document.getElementById('resetRecordBtn').addEventListener('click', () => {
+      record = 0;
+      localStorage.setItem('mathe-record', '0');
+      recordEl.textContent = '0';
+      showToast('Rekord gelöscht');
+    });
+
+    levelEl.addEventListener('change', generateTasks);
+
+    tasksEl.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        const inputs = [...tasksEl.querySelectorAll('input')];
+        const idx = inputs.indexOf(document.activeElement);
+        if(idx >= 0 && idx < inputs.length - 1){
+          inputs[idx + 1].focus();
+        }else{
+          checkAnswers();
+        }
+      }
+    });
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.hidden = false;
+      installBadge.textContent = '📲 Installation möglich';
+      installTip.textContent = 'Натисніть «Installieren», щоб встановити додаток.';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if(!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBtn.hidden = true;
+      installBadge.textContent = '✅ Installiert oder bestätigt';
+      showToast('Installationsfenster geöffnet');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installBtn.hidden = true;
+      installBadge.textContent = '✅ App installiert';
+      installTip.textContent = 'Додаток встановлено на пристрій.';
+      showToast('App installiert');
+    });
+
+    if('serviceWorker' in navigator){
+      window.addEventListener('load', async () => {
+        try{
+          await navigator.serviceWorker.register('./service-worker.js');
+        }catch(err){
+          console.error('Service Worker Fehler:', err);
+        }
+      });
+    }
+
+    generateTasks();
+  </script>
+</body>
+</html>
