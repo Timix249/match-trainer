@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Mathe Aufgaben</title>
+
+<style>
+body{
+    font-family: Arial;
+    padding:20px;
+}
+
+input{
+    width:60px;
+    font-size:18px;
+    margin:5px;
+}
+
+.correct{
+    background-color:#8cff8c;
+}
+
+.wrong{
+    background-color:#ff8c8c;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Mathe Aufgaben</h1>
+
+<h2>Plus</h2>
+
+34 + 41 = <input id="a1"><br>
+45 + 23 = <input id="a2"><br>
+12 + 34 = <input id="a3"><br>
+62 + 12 = <input id="a4"><br>
+
+<h2>Minus</h2>
+
+34 - 12 = <input id="a5"><br>
+45 - 23 = <input id="a6"><br>
+34 - 21 = <input id="a7"><br>
+100 - 83 = <input id="a8"><br>
+
+<h2>Mal</h2>
+
+6 × 7 = <input id="a9"><br>
+3 × 4 = <input id="a10"><br>
+5 × 8 = <input id="a11"><br>
+2 × 3 = <input id="a12"><br>
+
+<h2>Geteilt</h2>
+
+12 : 3 = <input id="a13"><br>
+48 : 8 = <input id="a14"><br>
+32 : 4 = <input id="a15"><br>
+6 : 2 = <input id="a16"><br>
+
+<h2>Bonus</h2>
+
+6 + 22 = <input id="a17"><br>
+
+<script>
+
+let answers = {
+a1:75,
+a2:68,
+a3:46,
+a4:74,
+a5:22,
+a6:22,
+a7:13,
+a8:17,
+a9:42,
+a10:12,
+a11:40,
+a12:6,
+a13:4,
+a14:6,
+a15:8,
+a16:3,
+a17:28
+}
+
+document.addEventListener("keydown",function(e){
+
+if(e.key.toLowerCase() === "f"){
+
+for(let id in answers){
+
+let input = document.getElementById(id)
+let value = Number(input.value)
+
+input.classList.remove("correct","wrong")
+
+if(value === answers[id]){
+input.classList.add("correct")
+}else{
+input.classList.add("wrong")
+}
+
+}
+
+}
+
+})
+
+</script>
+
+</body>
+</html>
