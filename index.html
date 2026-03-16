@@ -8,13 +8,28 @@
 <style>
 
 body{
-font-family: Arial;
+font-family:Arial;
+background:#f0f2f5;
+padding:40px;
+}
+
+.app{
+max-width:600px;
+margin:auto;
+background:white;
 padding:30px;
-background:#f5f5f5;
+border-radius:10px;
+box-shadow:0 5px 20px rgba(0,0,0,0.15);
 }
 
 h1{
-margin-bottom:20px;
+margin-top:0;
+}
+
+select,button{
+font-size:16px;
+padding:8px 14px;
+margin:10px 5px;
 }
 
 .task{
@@ -26,27 +41,19 @@ input{
 width:70px;
 font-size:18px;
 padding:4px;
-margin-left:5px;
 }
 
 .correct{
-background:#8cff8c;
+background:#9cff9c;
 }
 
 .wrong{
-background:#ff8c8c;
+background:#ff9c9c;
 }
 
-button{
-margin-top:25px;
+#score{
+margin-top:15px;
 font-size:20px;
-padding:12px 25px;
-cursor:pointer;
-}
-
-#result{
-margin-top:20px;
-font-size:22px;
 font-weight:bold;
 }
 
@@ -56,98 +63,114 @@ font-weight:bold;
 
 <body>
 
-<h1>Mathe Aufgaben</h1>
+<div class="app">
+
+<h1>Mathe Trainer</h1>
+
+<label>Schwierigkeit:</label>
+
+<select id="level">
+<option value="easy">Leicht</option>
+<option value="medium">Mittel</option>
+<option value="hard">Schwer</option>
+</select>
+
+<button onclick="generate()">Neue Aufgaben</button> <button onclick="check()">Prüfen</button>
 
 <div id="tasks"></div>
 
-<button onclick="checkAnswers()">Prüfen</button>
+<div id="score">Richtig: 0</div>
+<div id="record"></div>
 
-<div id="result"></div>
+</div>
 
 <script>
 
-let tasks = []
-let answers = []
+let answers=[]
+let record=localStorage.getItem("record") || 0
 
-function random(min,max){
+document.getElementById("record").innerText="🏆 Rekord: "+record
+
+function rand(min,max){
 return Math.floor(Math.random()*(max-min+1))+min
 }
 
-function createTasks(){
+function generate(){
 
-let container = document.getElementById("tasks")
+let container=document.getElementById("tasks")
+container.innerHTML=""
 
-for(let i=0;i<25;i++){
+answers=[]
 
-let a=random(10,99)
-let b=random(10,99)
+let level=document.getElementById("level").value
 
-tasks.push(a+" + "+b)
-answers.push(a+b)
+let min=1
+let max=10
 
+if(level==="medium"){
+min=10
+max=50
 }
 
-for(let i=0;i<25;i++){
-
-let a=random(20,99)
-let b=random(10,19)
-
-tasks.push(a+" - "+b)
-answers.push(a-b)
-
+if(level==="hard"){
+min=50
+max=200
 }
 
-for(let i=0;i<25;i++){
+for(let i=0;i<20;i++){
 
-let a=random(2,9)
-let b=random(2,9)
+let type=rand(1,4)
+let a=rand(min,max)
+let b=rand(min,max)
 
-tasks.push(a+" × "+b)
-answers.push(a*b)
+let task=""
+let result=0
 
+if(type===1){
+task=a+" + "+b
+result=a+b
 }
 
-for(let i=0;i<25;i++){
+if(type===2){
+task=a+" - "+b
+result=a-b
+}
 
-let b=random(2,9)
-let result=random(2,9)
-let a=b*result
+if(type===3){
+task=a+" × "+b
+result=a*b
+}
 
-tasks.push(a+" : "+b)
+if(type===4){
+b=rand(1,10)
+let c=rand(1,10)
+a=b*c
+task=a+" : "+b
+result=c
+}
+
 answers.push(result)
-
-}
-
-tasks.push("125 + 375")
-answers.push(500)
-
-tasks.push("999 - 444")
-answers.push(555)
-
-tasks.push("12 × 12")
-answers.push(144)
-
-for(let i=0;i<tasks.length;i++){
 
 let div=document.createElement("div")
 div.className="task"
 
-div.innerHTML=(i+1)+") "+tasks[i]+" = <input id='q"+i+"'>"
+div.innerHTML=(i+1)+") "+task+" = <input id='q"+i+"'>"
 
 container.appendChild(div)
 
 }
 
+document.getElementById("score").innerText="Richtig: 0"
+
 }
 
-function checkAnswers(){
+function check(){
 
 let correct=0
 
 for(let i=0;i<answers.length;i++){
 
 let input=document.getElementById("q"+i)
-
 let value=Number(input.value)
 
 input.classList.remove("correct","wrong")
@@ -165,11 +188,20 @@ input.classList.add("wrong")
 
 }
 
-document.getElementById("result").innerHTML="Richtig: "+correct+" / "+answers.length
+document.getElementById("score").innerText="Richtig: "+correct+" / "+answers.length
+
+if(correct>record){
+
+record=correct
+localStorage.setItem("record",record)
+
+document.getElementById("record").innerText="🏆 Rekord: "+record
 
 }
 
-createTasks()
+}
+
+generate()
 
 </script>
 
