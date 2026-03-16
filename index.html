@@ -1,111 +1,175 @@
 <!DOCTYPE html>
+
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Mathe Aufgaben</title>
+<title>Mathe Trainer</title>
 
 <style>
+
 body{
-    font-family: Arial;
-    padding:20px;
+font-family: Arial;
+padding:30px;
+background:#f5f5f5;
+}
+
+h1{
+margin-bottom:20px;
+}
+
+.task{
+margin:6px 0;
+font-size:18px;
 }
 
 input{
-    width:60px;
-    font-size:18px;
-    margin:5px;
+width:70px;
+font-size:18px;
+padding:4px;
+margin-left:5px;
 }
 
 .correct{
-    background-color:#8cff8c;
+background:#8cff8c;
 }
 
 .wrong{
-    background-color:#ff8c8c;
+background:#ff8c8c;
 }
+
+button{
+margin-top:25px;
+font-size:20px;
+padding:12px 25px;
+cursor:pointer;
+}
+
+#result{
+margin-top:20px;
+font-size:22px;
+font-weight:bold;
+}
+
 </style>
+
 </head>
 
 <body>
 
 <h1>Mathe Aufgaben</h1>
 
-<h2>Plus</h2>
+<div id="tasks"></div>
 
-34 + 41 = <input id="a1"><br>
-45 + 23 = <input id="a2"><br>
-12 + 34 = <input id="a3"><br>
-62 + 12 = <input id="a4"><br>
+<button onclick="checkAnswers()">Prüfen</button>
 
-<h2>Minus</h2>
-
-34 - 12 = <input id="a5"><br>
-45 - 23 = <input id="a6"><br>
-34 - 21 = <input id="a7"><br>
-100 - 83 = <input id="a8"><br>
-
-<h2>Mal</h2>
-
-6 × 7 = <input id="a9"><br>
-3 × 4 = <input id="a10"><br>
-5 × 8 = <input id="a11"><br>
-2 × 3 = <input id="a12"><br>
-
-<h2>Geteilt</h2>
-
-12 : 3 = <input id="a13"><br>
-48 : 8 = <input id="a14"><br>
-32 : 4 = <input id="a15"><br>
-6 : 2 = <input id="a16"><br>
-
-<h2>Bonus</h2>
-
-6 + 22 = <input id="a17"><br>
+<div id="result"></div>
 
 <script>
 
-let answers = {
-a1:75,
-a2:68,
-a3:46,
-a4:74,
-a5:22,
-a6:22,
-a7:13,
-a8:17,
-a9:42,
-a10:12,
-a11:40,
-a12:6,
-a13:4,
-a14:6,
-a15:8,
-a16:3,
-a17:28
+let tasks = []
+let answers = []
+
+function random(min,max){
+return Math.floor(Math.random()*(max-min+1))+min
 }
 
-document.addEventListener("keydown",function(e){
+function createTasks(){
 
-if(e.key.toLowerCase() === "f"){
+let container = document.getElementById("tasks")
 
-for(let id in answers){
+for(let i=0;i<25;i++){
 
-let input = document.getElementById(id)
-let value = Number(input.value)
+let a=random(10,99)
+let b=random(10,99)
+
+tasks.push(a+" + "+b)
+answers.push(a+b)
+
+}
+
+for(let i=0;i<25;i++){
+
+let a=random(20,99)
+let b=random(10,19)
+
+tasks.push(a+" - "+b)
+answers.push(a-b)
+
+}
+
+for(let i=0;i<25;i++){
+
+let a=random(2,9)
+let b=random(2,9)
+
+tasks.push(a+" × "+b)
+answers.push(a*b)
+
+}
+
+for(let i=0;i<25;i++){
+
+let b=random(2,9)
+let result=random(2,9)
+let a=b*result
+
+tasks.push(a+" : "+b)
+answers.push(result)
+
+}
+
+tasks.push("125 + 375")
+answers.push(500)
+
+tasks.push("999 - 444")
+answers.push(555)
+
+tasks.push("12 × 12")
+answers.push(144)
+
+for(let i=0;i<tasks.length;i++){
+
+let div=document.createElement("div")
+div.className="task"
+
+div.innerHTML=(i+1)+") "+tasks[i]+" = <input id='q"+i+"'>"
+
+container.appendChild(div)
+
+}
+
+}
+
+function checkAnswers(){
+
+let correct=0
+
+for(let i=0;i<answers.length;i++){
+
+let input=document.getElementById("q"+i)
+
+let value=Number(input.value)
 
 input.classList.remove("correct","wrong")
 
-if(value === answers[id]){
+if(value===answers[i]){
+
 input.classList.add("correct")
+correct++
+
 }else{
+
 input.classList.add("wrong")
-}
 
 }
 
 }
 
-})
+document.getElementById("result").innerHTML="Richtig: "+correct+" / "+answers.length
+
+}
+
+createTasks()
 
 </script>
 
